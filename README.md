@@ -39,3 +39,12 @@ Taxa de compressão: 56.92% (arquivo reduzido de 4075552 bytes para 1755741 byte
 MSE (Mean Squared Error): 0.000000
 compressão sem perda.
 ```
+Para visualizar as imagens:
+
+```bash
+open bin/nasa_reconstructed.pgm  
+```
+ou
+```bash
+open bin/nasa.pgm  
+```

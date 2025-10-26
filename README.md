@@ -4,12 +4,13 @@ O algoritmo de compressão Quadtree é amplamente utilizado em processamento de 
 Ele funciona subdividindo a imagem em quatro quadrantes até que cada bloco seja considerado “uniforme” o suficiente para ser representado por um único valor médio.
 
 Neste projeto:
-	•	A imagem é lida em formato PGM (grayscale).
-	•	É gerada uma versão comprimida no formato .qtb (Quadtree Binary).
-	•	Em seguida, o programa decodifica o arquivo e reconstrói a imagem original.
-	•	São calculadas as métricas:
-	•	Taxa de compressão
-	•	MSE (Mean Squared Error)
+
+- A imagem é lida em formato **PGM (grayscale)**.  
+- É gerada uma versão comprimida no formato **`.qtb` (Quadtree Binary)**.  
+- Em seguida, o programa **decodifica o arquivo e reconstrói a imagem original**.  
+- São calculadas as métricas:
+  - **Taxa de compressão**
+  - **MSE (Mean Squared Error)**
 
 ## Compilação
 

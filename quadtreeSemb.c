@@ -186,6 +186,18 @@ void calcCompressionRate(const char *originalFile, const char *compressedFile) {
 int main(void) {
     printf("Compressão Quadtree Lossless \n");
 
+    // char inputFile[100] = "img/logotipo-da-apple.pgm";
+    // char qtFile[100] = "bin/logotipo-da-apple_quadtree.qtb";
+    // char outputFile[100] = "bin/logotipo-da-apple_quadtree_reconstructed.pgm";
+
+    // char inputFile[100] = "img/smpte.pgm";
+    // char qtFile[100] = "bin/smpte_quadtree.qtb";
+    // char outputFile[100] = "bin/smpte_quadtree_reconstructed.pgm";
+
+    // char inputFile[100] = "img/nasa.pgm";
+    // char qtFile[100] = "bin/nasa_quadtree.qtb";
+    // char outputFile[100] = "bin/nasa_quadtree_reconstructed.pgm";
+
     char inputFile[100] = "img/coolcat.pgm";
     char qtFile[100] = "bin/coolcat_quadtree.qtb";
     char outputFile[100] = "bin/coolcat_quadtree_reconstructed.pgm";

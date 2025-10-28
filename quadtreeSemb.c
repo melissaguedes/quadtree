@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
 
 #define MAX_IMAGE_SIZE 2048 // dimensão máxima da imagem
@@ -185,6 +184,18 @@ void calcCompressionRate(const char *originalFile, const char *compressedFile) {
 // programa principal: lê, codifica, decodifica e avalia
 int main(void) {
     printf("Compressão Quadtree Lossless \n");
+
+    // char inputFile[100] = "img/logotipo-da-apple.pgm";
+    // char qtFile[100] = "bin/logotipo-da-apple_quadtree.qtb";
+    // char outputFile[100] = "bin/logotipo-da-apple_quadtree_reconstructed.pgm";
+
+    // char inputFile[100] = "img/smpte.pgm";
+    // char qtFile[100] = "bin/smpte_quadtree.qtb";
+    // char outputFile[100] = "bin/smpte_quadtree_reconstructed.pgm";
+
+    // char inputFile[100] = "img/nasa.pgm";
+    // char qtFile[100] = "bin/nasa_quadtree.qtb";
+    // char outputFile[100] = "bin/nasa_quadtree_reconstructed.pgm";
 
     char inputFile[100] = "img/coolcat.pgm";
     char qtFile[100] = "bin/coolcat_quadtree.qtb";

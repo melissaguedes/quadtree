@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_IMAGE_SIZE 2048 // dimensão máxima da imagem
-#define MAX_STACK_SIZE 4096 // tamanho máximo da pilha
+#define MAX_IMAGE_SIZE 90 // dimensão máxima da imagem
+#define MAX_STACK_SIZE 90 // tamanho máximo da pilha
 
 typedef struct __attribute__((packed)) { // garante que não haja bytes extras de alinhamento na struct
     unsigned short x, y; // coordenadas
@@ -20,7 +20,6 @@ Node stack[MAX_STACK_SIZE]; // array da pilha
 int top = -1; // índice do topo da pilha
 
 int image[MAX_IMAGE_SIZE][MAX_IMAGE_SIZE];
-int output[MAX_IMAGE_SIZE][MAX_IMAGE_SIZE];
 
 // empilha um nó na pilha
 void push(int x, int y, int size) {
@@ -61,20 +60,6 @@ void pgmRead(const char *filename, int image[MAX_IMAGE_SIZE][MAX_IMAGE_SIZE], in
     fclose(fp);
 }
 
-// escreve matriz 'img' em arquivo PGM P2
-void pgmWrite(const char *filename, int img[MAX_IMAGE_SIZE][MAX_IMAGE_SIZE], int width, int height) {
-    FILE *fp = fopen(filename, "w");
-    if (!fp) { printf("Erro ao salvar %s\n", filename); exit(1); }
-
-    fprintf(fp, "P2\n%d %d\n255\n", width, height);
-    for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++)
-            fprintf(fp, "%d ", img[i][j]);
-        fprintf(fp, "\n");
-    }
-    fclose(fp);
-}
-
 // verifica se bloco é uniforme (lossless)
 int isBlockUniform(int x, int y, int size, int width, int height) {
     int first = image[y][x];
@@ -87,26 +72,22 @@ int isBlockUniform(int x, int y, int size, int width, int height) {
     return 1;
 }
 
-// preenche bloco em 'output' com valor
-void fillOutputBlock(int x, int y, int size, int width, int height, int value) {
-    for (int i = y; i < y + size && i < height; i++) {
-        for (int j = x; j < x + size && j < width; j++) {
-            output[i][j] = value;
-        }
-    }
-}
-
 // codifica imagem para .qtb usando quadtree lossless
 void quadtreeEncode(int width, int height, const char *outfile) {
     FILE *fp = fopen(outfile, "wb");
     if (!fp) { printf("Erro ao criar arquivo %s\n", outfile); exit(1); }
 
+    // cabeçalho: altura e largura
     fwrite(&width, sizeof(int), 1, fp);
     fwrite(&height, sizeof(int), 1, fp);
 
-    top = -1;
+    top = -1; // pilha vazia
+
     int size = 1;
-    while (size < width || size < height) size *= 2; // encontra tamanho potência de 2 para cobrir imagem
+    while (size < width || size < height) {
+        size *= 2; // encontra tamanho potência de 2 para cobrir imagem
+    }
+
     push(0, 0, size); // empilha bloco inicial
 
     while (!isEmpty()) {
@@ -134,56 +115,13 @@ void quadtreeEncode(int width, int height, const char *outfile) {
     fclose(fp);
 }
 
-// decodifica .qtb e preenche 'output'
-void quadtreeDecode(const char *infile) {
-    FILE *fp = fopen(infile, "rb");
-    if (!fp) { printf("Erro ao abrir arquivo %s\n", infile); exit(1); }
-
-    int width, height;
-    fread(&width, sizeof(int), 1, fp);
-    fread(&height, sizeof(int), 1, fp);
-
-    Block b;
-    while (fread(&b, sizeof(Block), 1, fp)) {
-        fillOutputBlock(b.x, b.y, b.size, width, height, b.value); // preenche bloco decodificado
-    }
-
-    fclose(fp);
-}
-
-// calcula MSE entre imagens original e reconstruída
-double calcMSE(int original[MAX_IMAGE_SIZE][MAX_IMAGE_SIZE], int reconstructed[MAX_IMAGE_SIZE][MAX_IMAGE_SIZE], int width, int height) {
-    double mse = 0.0;
-    long total = width * height;
-    for (int i = 0; i < height; i++)
-        for (int j = 0; j < width; j++) {
-            double diff = original[i][j] - reconstructed[i][j];
-            mse += diff * diff; // acumula erro quadrático
-        }
-    return mse / total; // retorna média do erro
-}
-
-// calcula e imprime taxa de compressão (%)
-void calcCompressionRate(const char *originalFile, const char *compressedFile) {
-    FILE *f1 = fopen(originalFile, "rb");
-    FILE *f2 = fopen(compressedFile, "rb");
-    if (!f1 || !f2) return;
-
-    fseek(f1, 0L, SEEK_END);
-    fseek(f2, 0L, SEEK_END);
-    long s1 = ftell(f1);
-    long s2 = ftell(f2);
-
-    double rate = (1.0 - ((double)s2 / s1)) * 100.0;
-    printf("Taxa de compressão: %.2f%% (arquivo reduzido de %ld bytes para %ld bytes)\n", rate, s1, s2);
-
-    fclose(f1);
-    fclose(f2);
-}
-
 // programa principal: lê, codifica, decodifica e avalia
 int main(void) {
-    printf("Compressão Quadtree Lossless \n");
+    printf("Compressão Quadtree Sem Pe \n");
+
+    // char inputFile[50] = "img/nasa.pgm";
+    // char qtFile[50] = "bin/nasa_quadtree.qtb";
+    // char outputFile[50] = "bin/nasa_quadtree_reconstructed.pgm";
 
     // char inputFile[100] = "img/logotipo-da-apple.pgm";
     // char qtFile[100] = "bin/logotipo-da-apple_quadtree.qtb";
@@ -193,13 +131,12 @@ int main(void) {
     // char qtFile[100] = "bin/smpte_quadtree.qtb";
     // char outputFile[100] = "bin/smpte_quadtree_reconstructed.pgm";
 
-    // char inputFile[100] = "img/nasa.pgm";
-    // char qtFile[100] = "bin/nasa_quadtree.qtb";
-    // char outputFile[100] = "bin/nasa_quadtree_reconstructed.pgm";
+    // char inputFile[100] = "img/resized/coolcat.pgm";
+    // char qtFile[100] = "bin/coolcat_quadtree.qtb";
+    // char outputFile[100] = "bin/coolcat_quadtree_reconstructed.pgm";
 
-    char inputFile[100] = "img/coolcat.pgm";
-    char qtFile[100] = "bin/coolcat_quadtree.qtb";
-    char outputFile[100] = "bin/coolcat_quadtree_reconstructed.pgm";
+    char inputFile[100] = "img/coolcat90x90.pgm";
+    char qtFile[100] = "bin/coolcat90x90_quadtree.qtb";
 
     int width, height;
     pgmRead(inputFile, image, &width, &height); // lê imagem PGM
@@ -208,21 +145,6 @@ int main(void) {
     printf("codificando...\n");
     quadtreeEncode(width, height, qtFile); // codifica imagem em quadtree
     printf("arquivo %s gerado! \n", qtFile);
-
-    printf("decodificando...\n");
-    quadtreeDecode(qtFile); // decodifica arquivo quadtree
-
-    pgmWrite(outputFile, output, width, height); // salva imagem reconstruída
-    printf("imagem reconstruída salva em %s\n", outputFile);
-
-    double loss = calcMSE(image, output, width, height); // calcula erro quadrático médio
-    calcCompressionRate(inputFile, qtFile); // calcula taxa de compressão
-
-    printf("\nMSE (Mean Squared Error): %.6f\n", loss);
-    if (loss == 0.0)
-        printf("compressão sem perda.\n");
-    else
-        printf("compressão com perda (MSE > 0).\n");
 
     return 0;
 }
